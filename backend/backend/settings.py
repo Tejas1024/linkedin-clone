@@ -12,7 +12,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     '0.0.0.0',
     '.onrender.com',  # ✅ Added for Render
-    'your-backend-service-name.onrender.com',
+    'linkedin-clone-1-05he.onrender.com',
+',
 ]
 
 
@@ -124,10 +125,14 @@ REST_FRAMEWORK = {
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
+    "https://linkedin-clone-q5lan4wg5-tejas1024s-projects.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3001",      # Add this line for your current port
     "http://127.0.0.1:3001",  
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://linkedin-clone.*\.vercel\.app$",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
