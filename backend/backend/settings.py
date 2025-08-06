@@ -47,6 +47,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:3000",
     "https://linkedin-clone-lyart-chi.vercel.app",
     "https://linkedin-clone-5mt252p6o-tejas1024s-projects.vercel.app",
+    "https://linkedin-clone-eur3iaqks-tejas1024s-projects.vercel.app",
+    "https://linkedin-clone-tejas1024s-projects.vercel.app",
     "https://linkedin-clone-1-05he.onrender.com",
 ]
 
@@ -129,6 +131,8 @@ CORS_ALLOWED_ORIGINS = [
     # Your Vercel deployments
     "https://linkedin-clone-lyart-chi.vercel.app",
     "https://linkedin-clone-5mt252p6o-tejas1024s-projects.vercel.app",
+    "https://linkedin-clone-eur3iaqks-tejas1024s-projects.vercel.app",
+    "https://linkedin-clone-tejas1024s-projects.vercel.app",
     # Local development
     "http://localhost:3000",
     "http://127.0.0.1:3000",
