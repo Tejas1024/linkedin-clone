@@ -13,7 +13,6 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
     '.onrender.com',  # ✅ Added for Render
     'linkedin-clone-1-05he.onrender.com',
-',
 ]
 
 
