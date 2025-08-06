@@ -11,10 +11,10 @@ ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
     '0.0.0.0',
-    '.onrender.com',  # ✅ Added for Render
+    '.onrender.com',
     'linkedin-clone-1-05he.onrender.com',
+    '.vercel.app',  # Allow all Vercel subdomains
 ]
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,6 +45,9 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:3001",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://linkedin-clone-lyart-chi.vercel.app",
+    "https://linkedin-clone-5mt252p6o-tejas1024s-projects.vercel.app",
+    "https://linkedin-clone-1-05he.onrender.com",
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -101,7 +104,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-
 AUTH_USER_MODEL = 'accounts.CustomUser' 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -122,22 +124,28 @@ REST_FRAMEWORK = {
     ],
 }
 
-# CORS Settings
+# CORS Settings - Updated for deployment
 CORS_ALLOWED_ORIGINS = [
-    "https://linkedin-clone-q5lan4wg5-tejas1024s-projects.vercel.app",
+    # Your Vercel deployments
+    "https://linkedin-clone-lyart-chi.vercel.app",
+    "https://linkedin-clone-5mt252p6o-tejas1024s-projects.vercel.app",
+    # Local development
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:3001",      # Add this line for your current port
-    "http://127.0.0.1:3001",  
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
 ]
+
+# Allow all Vercel deployments with regex
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://linkedin-clone.*\.vercel\.app$",
+    r"^https://.*-tejas1024s-projects\.vercel\.app$",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Add these additional CORS settings
-CORS_ALLOW_ALL_ORIGINS = False  # Set to True only for development testing
+# Additional CORS settings
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_HEADERS = [
     'accept',
     'accept-encoding',
@@ -150,7 +158,30 @@ CORS_ALLOWED_HEADERS = [
     'x-requested-with',
 ]
 
-# Add this logging configuration
+# Add these for better CORS handling
+CORS_PREFLIGHT_MAX_AGE = 86400
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# Logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -164,9 +195,13 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
-        'accounts': {  # Your app name
+        'accounts': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
+        },
+        'posts': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
     },
 }
