@@ -1,34 +1,47 @@
+// frontend/src/services/api.js
+
 import axios from 'axios';
 
-//const API_BASE_URL = 'http://localhost:8000/api';
+// CHANGED: Use the environment variable for your deployed Render backend URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-
-// Function to get CSRF token
-const getCSRFToken = () => {
-  return document.cookie
-    .split('; ')
-    .find(row => row.startsWith('csrftoken='))
-    ?.split('=')[1];
-};
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true,
+  withCredentials: true, // Useful for handling CSRF if needed, but not for the token
   headers: {
-    'Authorization': `Token ${userToken}`,
     'Content-Type': 'application/json',
   },
+  // REMOVED: The static Authorization header was the source of the error.
 });
 
-// Add CSRF token to requests
-api.interceptors.request.use(request => {
-  const csrfToken = getCSRFToken();
-  if (csrfToken) {
-    request.headers['X-CSRFToken'] = csrfToken;
+// NEW: Use a request interceptor to dynamically add the auth token.
+api.interceptors.request.use(
+  (config) => {
+    // Retrieve the token from localStorage on each request
+    const token = localStorage.getItem('authToken');
+    
+    if (token) {
+      // If the token exists, add it to the Authorization header
+      config.headers['Authorization'] = `Token ${token}`;
+    }
+    
+    // The CSRF token logic can be simplified or removed if only using TokenAuthentication
+    const csrfToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('csrftoken='))
+      ?.split('=')[1];
+
+    if (csrfToken) {
+      config.headers['X-CSRFToken'] = csrfToken;
+    }
+    
+    console.log('Starting Request', config);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  console.log('Starting Request', request);
-  return request;
-});
+);
 
 // Add response interceptor for debugging
 api.interceptors.response.use(
@@ -42,7 +55,8 @@ api.interceptors.response.use(
   }
 );
 
-// Auth endpoints
+
+// Auth endpoints (no changes needed here)
 export const authAPI = {
   register: (userData) => api.post('/auth/register/', userData),
   login: (credentials) => api.post('/auth/login/', credentials),
@@ -51,7 +65,7 @@ export const authAPI = {
   getUserProfile: (username) => api.get(`/auth/profile/${username}/`),
 };
 
-// Posts endpoints
+// Posts endpoints (no changes needed here)
 export const postsAPI = {
   getAllPosts: () => api.get('/posts/'),
   createPost: (postData) => api.post('/posts/', postData),
