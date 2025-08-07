@@ -1,11 +1,15 @@
+# backend/accounts/serializers.py
+
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+
+# RENAMED from UserRegistrationSerializer to match the import in views.py
+class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True)
 
@@ -52,11 +56,40 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"Error creating user: {str(e)}")
 
 
+# NEWLY ADDED CLASS - This was missing and is required by views.py
+class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for user login. Validates credentials.
+    """
+    username = serializers.CharField()
+    password = serializers.CharField(style={'input_type': 'password'}, trim_whitespace=False)
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        if username and password:
+            user = authenticate(request=self.context.get('request'),
+                                username=username, password=password)
+
+            # The authenticate call returns None for invalid credentials
+            if not user:
+                msg = 'Unable to log in with provided credentials.'
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = 'Must include "username" and "password".'
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'bio', 'date_joined')
         read_only_fields = ('id', 'date_joined')
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     posts_count = serializers.SerializerMethodField()
